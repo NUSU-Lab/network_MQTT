@@ -1,5 +1,6 @@
 #include <PubSubClient.h>
 #include <WiFiClientSecure.h>
+#include <ArduinoJson.h>
 // #include <WiFi.h>
 #include "mqtt_secrets.h"
 
@@ -52,6 +53,7 @@ int status = WL_IDLE_STATUS;
 long lastPublishMillis = 0;
 int connectionDelay = 1;
 int updateInterval = 15;
+String returnPayload = "";
 PubSubClient mqttClient(client);
 
 // Function to handle messages from MQTT subscription.
@@ -63,9 +65,29 @@ void mqttSubscriptionCallback(char *topic, byte *payload, unsigned int length)
   Serial.print("] ");
   for (int i = 0; i < length; i++)
   {
+    returnPayload += (char)payload[i];
     Serial.print((char)payload[i]);
   }
+  // JSON 문서 파싱을 위한 준비
+  StaticJsonDocument<512> doc; // JSON 문서 크기에 따라 크기 조절 필요
+
+  // JSON 파싱
+  DeserializationError error = deserializeJson(doc, returnPayload);
+
+  // 파싱 에러 체크
+  if (error)
+  {
+    Serial.print("deserializeJson() 실패: ");
+    Serial.println(error.c_str());
+    return;
+  }
+
+  // field8 값 추출
+  const char *field8 = doc["field8"]; // 또는 String field8 = doc["field8"].as<String>();
+
   Serial.println();
+  // field8 값 출력
+  Serial.println(field8);
 }
 
 // Subscribe to ThingSpeak channel for updates.
