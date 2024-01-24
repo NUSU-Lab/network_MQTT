@@ -8,11 +8,11 @@
 WiFiClient client;
 
 // Ensure correct credentials to connect to your WiFi Network.
-// char ssid[] = "KSW Guest";
-// char pass[] = "M1gukHappy15!";
+char ssid[] = "KSW Guest";
+char pass[] = "M1gukHappy15!";
 
-const char *ssid = "Lark";
-const char *password = "";
+// const char *ssid = "Lark";
+// const char *password = "";
 // Ensure that the credentials here allow you to publish and subscribe to the ThingSpeak channel.
 #define channelID 2407025
 // It is strongly recommended to use secure connections. However, certain hardware does not work with the WiFiClientSecure library.
@@ -90,7 +90,7 @@ void connectWifi()
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    WiFi.begin(ssid);
+    WiFi.begin(ssid, pass);
     delay(connectionDelay * 1000);
     Serial.println(WiFi.softAPgetStationNum());
   }
@@ -160,9 +160,9 @@ void loop()
   mqttClient.loop();
 
   // Update ThingSpeak channel periodically. The update results in the message to the subscriber.
-  if (abs(long(millis()) - lastPublishMillis) > updateInterval * 1000)
-  {
-    mqttPublish(channelID, (String("field1=") + String(WiFi.RSSI())));
-    lastPublishMillis = millis();
-  }
+  // if (abs(long(millis()) - lastPublishMillis) > updateInterval * 1000)
+  // {
+  //   // mqttPublish(channelID, (String("field1=") + String(WiFi.RSSI())));
+  //   lastPublishMillis = millis();
+  // }
 }
